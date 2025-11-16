@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оплата - ИИ Сонник</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        input.error {
+            border-color: #e74c3c;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .amount-info {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .amount-info .amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .amount-info .currency {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .min-amount {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .description {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .success-message {
+            text-align: center;
+            padding: 40px 20px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: #4caf50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: scaleIn 0.4s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .success-icon::after {
+            content: '✓';
+            color: white;
+            font-size: 50px;
+            font-weight: bold;
+        }
+
+        .success-message h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .success-message p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #764ba2;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="paymentForm">
+            <div class="header">
+                <h1>💚 Поддержка проекта</h1>
+                <p>ИИ Сонник</p>
+            </div>
+
+            <div class="description">
+                Спасибо за желание поддержать проект! Ваш вклад помогает развивать ИИ Сонник и делать его лучше.
+            </div>
+
+            <div class="amount-info">
+                <div class="amount" id="displayAmount">199</div>
+                <div class="currency">₽</div>
+                <div class="min-amount">Минимальная сумма: 199 ₽</div>
+            </div>
+
+            <form id="paymentFormElement">
+                <div class="form-group">
+                    <label for="amount">Сумма платежа (₽)</label>
+                    <input 
+                        type="number" 
+                        id="amount" 
+                        name="amount" 
+                        value="199" 
+                        min="199" 
+                        step="1"
+                        required
+                    />
+                    <div class="error-message" id="amountError">Сумма должна быть не менее 199 ₽</div>
+                </div>
+
+                <button type="submit" class="btn" id="payButton">
+                    Оплатить
+                </button>
+            </form>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <div class="success-icon"></div>
+            <h2>Платеж успешно выполнен!</h2>
+            <p id="successText">Спасибо за поддержку проекта!</p>
+            <a href="#" class="back-link" id="backLink">Вернуться в чат</a>
+        </div>
+    </div>
+
+    <script>
+        const invoiceId = '{{ invoice_id }}';
+        const chatUrl = '{{ chat_url }}' || null;
+        const paymentStatus = '{{ payment_status }}' || 'pending';
+        const initialAmount = {{ amount }} || 199;
+
+        // Если платеж уже оплачен, сразу показываем успешное сообщение
+        if (paymentStatus === 'paid') {
+            document.getElementById('paymentForm').style.display = 'none';
+            document.getElementById('successMessage').classList.add('show');
+            document.getElementById('successText').textContent = `Платеж на сумму ${initialAmount.toFixed(0)} ₽ успешно выполнен. Спасибо за поддержку!`;
+            if (chatUrl) {
+                document.getElementById('backLink').href = chatUrl;
+            } else {
+                document.getElementById('backLink').onclick = function(e) {
+                    e.preventDefault();
+                    window.close();
+                };
+            }
+        }
+
+        const amountInput = document.getElementById('amount');
+        const displayAmount = document.getElementById('displayAmount');
+        const paymentForm = document.getElementById('paymentFormElement');
+        const payButton = document.getElementById('payButton');
+        const amountError = document.getElementById('amountError');
+        const paymentFormContainer = document.getElementById('paymentForm');
+        const successMessage = document.getElementById('successMessage');
+        const successText = document.getElementById('successText');
+        const backLink = document.getElementById('backLink');
+
+        // Устанавливаем начальную сумму
+        if (initialAmount && initialAmount >= 199) {
+            amountInput.value = initialAmount;
+            displayAmount.textContent = initialAmount.toFixed(0);
+        }
+
+        // Обновление отображаемой суммы
+        amountInput.addEventListener('input', function() {
+            const value = parseFloat(this.value) || 0;
+            if (value >= 199) {
+                displayAmount.textContent = value.toFixed(0);
+                amountError.classList.remove('show');
+                this.classList.remove('error');
+            } else {
+                displayAmount.textContent = '199';
+            }
+        });
+
+        // Валидация перед отправкой
+        amountInput.addEventListener('blur', function() {
+            validateAmount();
+        });
+
+        function validateAmount() {
+            const value = parseFloat(amountInput.value) || 0;
+            if (value < 199) {
+                amountError.classList.add('show');
+                amountInput.classList.add('error');
+                return false;
+            }
+            amountError.classList.remove('show');
+            amountInput.classList.remove('error');
+            return true;
+        }
+
+        // Обработка отправки формы
+        paymentForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (!validateAmount()) {
+                return;
+            }
+
+            const amount = parseFloat(amountInput.value);
+            
+            // Блокируем кнопку и показываем загрузку
+            payButton.disabled = true;
+            payButton.innerHTML = '<span class="loading"></span>Обработка платежа...';
+
+            try {
+                // Отправляем запрос на подтверждение платежа
+                // Отправляем запрос на подтверждение платежа на текущий хост (API Gateway проксирует этот путь)
+                const response = await fetch(`/payments/${invoiceId}/confirm`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        amount: amount
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json().catch(() => ({ detail: 'Ошибка сервера' }));
+                    throw new Error(error.detail || 'Ошибка при обработке платежа');
+                }
+
+                const data = await response.json();
+
+                // Показываем успешное сообщение
+                paymentFormContainer.style.display = 'none';
+                successText.textContent = `Платеж на сумму ${amount.toFixed(0)} ₽ успешно выполнен. Спасибо за поддержку!`;
+                successMessage.classList.add('show');
+
+                // Устанавливаем ссылку возврата
+                if (chatUrl) {
+                    backLink.href = chatUrl;
+                } else {
+                    backLink.href = '#';
+                    backLink.onclick = function(e) {
+                        e.preventDefault();
+                        window.close();
+                    };
+                }
+
+            } catch (error) {
+                alert('Ошибка: ' + error.message);
+                payButton.disabled = false;
+                payButton.textContent = 'Оплатить';
+            }
+        });
+    </script>
+</body>
+</html>
+

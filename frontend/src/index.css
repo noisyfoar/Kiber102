@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-slate-950 text-slate-100 min-h-screen font-sans;
+}
+
+/* Dream theme background */
+.dream-bg {
+  position: relative;
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 800px at 80% -10%, rgba(99, 102, 241, 0.25), transparent 60%),
+    radial-gradient(900px 700px at -10% 20%, rgba(147, 51, 234, 0.22), transparent 60%),
+    radial-gradient(600px 500px at 50% 120%, rgba(20, 184, 166, 0.18), transparent 60%),
+    linear-gradient(180deg, #0b1020 0%, #0a0f1e 60%, #0a0e1c 100%);
+}
+
+.dream-bg::before,
+.dream-bg::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Twinkling stars layer */
+.dream-bg::before {
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.9) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 40% 70%, rgba(255,255,255,0.8) 50%, transparent 51%),
+    radial-gradient(1.8px 1.8px at 70% 20%, rgba(255,255,255,0.85) 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 85% 60%, rgba(255,255,255,0.8) 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 10% 80%, rgba(255,255,255,0.7) 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 60% 90%, rgba(255,255,255,0.7) 50%, transparent 51%);
+  background-repeat: repeat;
+  background-size: 800px 800px, 700px 700px, 900px 900px, 600px 600px, 500px 500px, 1000px 1000px;
+  animation: twinkle 12s linear infinite;
+  opacity: 0.6;
+}
+
+/* Aurora silky waves */
+.dream-bg::after {
+  background:
+    radial-gradient(60% 40% at 10% 10%, rgba(59, 130, 246, 0.12), transparent 60%),
+    radial-gradient(50% 35% at 90% 20%, rgba(236, 72, 153, 0.10), transparent 60%),
+    radial-gradient(70% 45% at 50% 90%, rgba(16, 185, 129, 0.10), transparent 60%);
+  filter: blur(40px);
+  animation: aurora 22s ease-in-out infinite alternate;
+  mix-blend-mode: screen;
+}
+
+@keyframes twinkle {
+  0%   { background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
+  100% { background-position: 800px 800px, -700px 700px, 900px -900px, -600px -600px, 500px -500px, -1000px 1000px; }
+}
+
+@keyframes aurora {
+  0%   { transform: translate3d(0,0,0) scale(1); opacity: 0.65; }
+  100% { transform: translate3d(0,-2%,0) scale(1.05); opacity: 0.9; }
+}
+
+/* Subtle card glow helper */
+.card-glow {
+  box-shadow:
+    0 20px 40px rgba(59, 130, 246, 0.08),
+    0 10px 25px rgba(139, 92, 246, 0.08),
+    inset 0 0 0 1px rgba(148, 163, 184, 0.06);
+}
+
+/* Thematic sky decorations */
+.sky-decor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.sky-decor .moon {
+  position: absolute;
+  top: -24px;
+  right: 24px;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 35%, #ffffff 0%, #e8efff 40%, #b6c3ff 60%, rgba(255,255,255,0) 62%),
+    radial-gradient(circle at 60% 60%, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.05) 55%, rgba(255,255,255,0) 60%);
+  box-shadow:
+    0 0 30px rgba(191, 219, 254, 0.4),
+    0 0 60px rgba(167, 139, 250, 0.25);
+  opacity: 0.9;
+}
+.sky-decor .cloud {
+  position: absolute;
+  background: radial-gradient(closest-side, rgba(255,255,255,0.9), rgba(255,255,255,0.7) 60%, rgba(255,255,255,0) 70%);
+  filter: blur(6px);
+  opacity: 0.25;
+  animation: floatClouds 28s linear infinite;
+}
+.sky-decor .cloud.cloud-1 { left: -120px; top: 60px; width: 240px; height: 90px; animation-delay: 0s; }
+.sky-decor .cloud.cloud-2 { left: 30%; top: 110px; width: 200px; height: 70px; animation-delay: 6s; }
+.sky-decor .cloud.cloud-3 { right: -140px; top: 80px; width: 260px; height: 100px; animation-delay: 12s; }
+.sky-decor .stars {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1.2px 1.2px at 15% 25%, rgba(255,255,255,0.7) 50%, transparent 51%),
+    radial-gradient(1.6px 1.6px at 55% 20%, rgba(255,255,255,0.8) 50%, transparent 51%),
+    radial-gradient(1.4px 1.4px at 80% 35%, rgba(255,255,255,0.7) 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 35% 60%, rgba(255,255,255,0.6) 50%, transparent 51%);
+  background-size: 800px 600px;
+  opacity: 0.5;
+  animation: twinkle 14s linear infinite;
+}
+@keyframes floatClouds {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(20%); }
+}
+
+/* Mobile tuning */
+@media (max-width: 640px) {
+  .sky-decor .moon { opacity: 0.75; transform: scale(0.9); }
+  .sky-decor .cloud { opacity: 0.18; }
+}

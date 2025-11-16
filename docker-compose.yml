@@ -1,0 +1,85 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: dream
+      POSTGRES_USER: dream
+      POSTGRES_PASSWORD: dream
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  user_service:
+    build: ./user_service
+    environment:
+      USER_DATABASE_URL: postgresql+psycopg2://dream:dream@postgres:5432/dream
+    depends_on:
+      - postgres
+    ports:
+      - "8001:8001"
+    command: uvicorn user_service.app.main:app --host 0.0.0.0 --port 8001
+
+  chat_service:
+    build: ./chat_service
+    environment:
+      CHAT_REDIS_URL: redis://redis:6379/0
+      GIGACHAT_KEY: ${GIGACHAT_KEY:-}
+      GIGACHAT_AUTH_ENDPOINT: ${GIGACHAT_AUTH_ENDPOINT:-https://ngw.devices.sberbank.ru:9443/api/v2/oauth}
+      GIGACHAT_ENDPOINT: ${GIGACHAT_ENDPOINT:-https://gigachat.devices.sberbank.ru/api/v1/chat/completions}
+      GIGACHAT_SCOPE: ${GIGACHAT_SCOPE:-GIGACHAT_API_PERS}
+    depends_on:
+      - redis
+    ports:
+      - "8002:8002"
+    command: uvicorn chat_service.app.main:app --host 0.0.0.0 --port 8002
+
+  payment_service:
+    build: ./payment_service
+    ports:
+      - "8003:8003"
+    command: uvicorn payment_service.app.main:app --host 0.0.0.0 --port 8003
+
+  api_gateway:
+    build: ./api_gateway
+    environment:
+      API_JWT_SECRET: ${API_JWT_SECRET:-change-me}
+      USER_SERVICE_URL: https://seasonally-dapper-anaconda.cloudpub.ru/
+      CHAT_SERVICE_URL: https://shapelessly-welcomed-roller.cloudpub.ru/
+      PAYMENT_SERVICE_URL: https://vehemently-purifying-lungfish.cloudpub.ru/
+      API_PUBLIC_BASE_URL: https://unequally-paternal-guan.cloudpub.ru/
+    depends_on:
+      - user_service
+      - chat_service
+      - payment_service
+    ports:
+      - "8000:8000"
+    command: uvicorn api_gateway.app.main:app --host 0.0.0.0 --port 8000
+
+  frontend:
+    build: ./frontend
+    environment:
+      VITE_API_URL: https://unequally-paternal-guan.cloudpub.ru/
+    depends_on:
+      - api_gateway
+    ports:
+      - "4173:4173"
+
+  telegram_bot:
+    build: ./telegram_bot
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN:-dummy}
+      API_GATEWAY_URL: https://unequally-paternal-guan.cloudpub.ru/
+      TELEGRAM_PUBLIC_BASE_URL: https://unequally-paternal-guan.cloudpub.ru/
+    depends_on:
+      - api_gateway
+
+volumes:
+  postgres_data:

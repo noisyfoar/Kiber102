@@ -1,0 +1,7 @@
+# Project-level helper requirements
+fastapi
+uvicorn[standard]
+httpx
+pydantic
+sqlalchemy
+python-dotenv
