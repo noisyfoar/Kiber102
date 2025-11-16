@@ -11,6 +11,7 @@ from aiogram.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     KeyboardButton,
+    BufferedInputFile,
     Message,
     ReplyKeyboardMarkup,
     ReplyKeyboardRemove,
@@ -336,9 +337,12 @@ def register_handlers(dp: Dispatcher, gateway: ApiGatewayClient, bot, default_bi
         
         try:
             audio_data = await gateway.text_to_speech(clean_text, lang="ru")
-            audio_file = BytesIO(audio_data)
-            audio_file.name = "response.ogg"
-            await callback.message.answer_voice(voice=audio_file, caption="Озвучка ответа")
+            if not audio_data:
+                await callback.answer("Сервис озвучки вернул пустой аудио-файл", show_alert=True)
+                return
+            # Используем BufferedInputFile для aiogram v3
+            audio_file = BufferedInputFile(audio_data, filename="response.mp3")
+            await callback.message.answer_audio(audio=audio_file, caption="Озвучка ответа")
         except Exception as e:
             await callback.answer(f"Ошибка озвучки: {str(e)}", show_alert=True)
 

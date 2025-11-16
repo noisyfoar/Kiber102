@@ -159,7 +159,7 @@ def synthesize_speech(text: str, lang: str = "ru", slow: bool = False) -> str:
             text = text[:max_length] + "..."
         
         # Создаем TTS объект
-        tts = gTTS(text=text, lang=lang, slow=slow)
+        tts = gTTS(text=text, lang=lang, slow=False)
         
         # Генерируем аудио в память
         audio_stream = BytesIO()
